@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import pandas as pd
 
 def histogram_boxplot(data, feature, figsize=(12, 7), kde=False, bins=None, dropna=True):
     """
@@ -214,3 +215,73 @@ def distribution_plot_wrt_target(data, predictor, target):
     plt.show()
 
 
+###comparative boxplots
+
+def comparative_boxplot(data, x_col, y_col, title="", x_label="", y_label="", palette="Oranges"):
+    """
+    Creates a comparative boxplot between a categorical and a numerical variable.
+
+    Parameters:
+        data (DataFrame): dataset to use.
+        x_col (str): name of the categorical column (x-axis).
+        y_col (str): name of the numerical column (y-axis).
+        title (str): plot title.
+        x_label (str): label for the x-axis.
+        y_label (str): label for the y-axis.
+        palette (str or list): Seaborn color palette.
+
+    Returns:
+        None
+    """
+    plt.figure(figsize=(10, 6))
+    sns.boxplot(data=data, x=x_col, y=y_col, palette='Purples')
+    plt.title(title, fontsize=14)
+    plt.xlabel(x_label if x_label else x_col, fontsize=12)
+    plt.ylabel(y_label if y_label else y_col, fontsize=12)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
+
+##comparative barplots
+
+def comparative_barplot(data, x_col, y_col, title="", x_label="", y_label="", palette="Purples"):
+    plt.figure(figsize=(10, 6))
+    sns.barplot(data=data, x=x_col, y=y_col, palette=palette, errorbar="sd")
+    plt.title(title, fontsize=14)
+    plt.xlabel(x_label if x_label else x_col, fontsize=12)
+    plt.ylabel(y_label if y_label else y_col, fontsize=12)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
+
+
+### outlier detector
+
+def detect_outliers_iqr(data, threshold=0.01):
+    outlier_summary = []
+    for col in data.select_dtypes(include=['float64', 'int64']).columns:
+        Q1 = data[col].quantile(0.25)
+        Q3 = data[col].quantile(0.75)
+        IQR = Q3 - Q1
+        lower_bound = Q1 - 1.5 * IQR
+        upper_bound = Q3 + 1.5 * IQR
+        # Identify outliers
+        outliers = data[(data[col] < lower_bound) | (data[col] > upper_bound)][col]
+        n_outliers = len(outliers)
+        pct_outliers = 100 * n_outliers / len(data)
+        # Print summary
+        print(f"Column: {col} - Number of Outliers: {n_outliers}")
+        print(f"Column: {col} - % of Outliers: {pct_outliers:.2f}%\n")
+        # Add to list if exceeds threshold
+        if pct_outliers > threshold * 100:
+            outlier_summary.append((col, n_outliers, pct_outliers))
+        # Plot boxplot
+        plt.figure(figsize=(8, 5))
+        sns.boxplot(x=data[col], color='orange')
+        sns.stripplot(x=outliers, color='red', size=4, label='Outliers')
+        plt.title(f'Boxplot with Outliers for {col}', fontsize=14)
+        plt.legend()
+        plt.show()
+    return pd.DataFrame(outlier_summary, columns=['Column', 'Num_Outliers', 'Pct_Outliers'])
