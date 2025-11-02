@@ -784,7 +784,8 @@ BRAND_MODEL_VOCAB = [
   {"brand": "volkswagen", "model_lower": "toura", "model_correct": "touran", "correction": 1},
   {"brand": "volkswagen", "model_lower": "touran", "model_correct": "touran", "correction": 0},
   {"brand": "volkswagen", "model_lower": "u", "model_correct": "up", "correction": 1},
-  {"brand": "volkswagen", "model_lower": "up", "model_correct": "up", "correction": 0}
+  {"brand": "volkswagen", "model_lower": "up", "model_correct": "up", "correction": 0},
+  {"brand": "volkswagen", "model_lower": "nan", "model_correct": "nan", "correction": 0}
 ]
 
 
